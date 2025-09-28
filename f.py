@@ -10,8 +10,13 @@ st.markdown("""
         color: white;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+    /* Reduce top margin/padding for the main block */
+    .block-container {
+        padding-top: 1.4rem !important;
+    }
+    /* Make title align to the left */
     h1 {
-        text-align: center;
+        text-align: left !important;
         margin-bottom: 2rem;
         color: #ffdd57;
     }
@@ -48,7 +53,7 @@ st.markdown("""
     }
     /* Style primary (encode and decode) buttons yellow */
     button[kind="primary"] {
-        background-color: #facc15 !important; /* Tailwind yellow-400 */
+        background-color: #facc15 !important;
         color: black !important;
         font-weight: 900 !important;
         border-radius: 10px !important;
@@ -59,12 +64,12 @@ st.markdown("""
         width: 100%;
     }
     button[kind="primary"]:hover {
-        background-color: #b45309 !important; /* Tailwind yellow-700 */
+        background-color: #b45309 !important;
         color: white !important;
     }
     /* Download button green */
     div.stDownloadButton > button {
-        background-color: #16a34a !important; /* Tailwind green-600 */
+        background-color: #16a34a !important;
         color: white !important;
         font-weight: bold !important;
         border-radius: 10px !important;
@@ -75,7 +80,7 @@ st.markdown("""
         margin-top: 10px !important;
     }
     div.stDownloadButton > button:hover {
-        background-color: #15803d !important; /* Tailwind green-700 */
+        background-color: #15803d !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -92,7 +97,7 @@ def clear_output_on_input_change():
 
 st.title("🔐 Base64 Encode / Decode Utility")
 
-mode = st.radio("Select Mode", ["Encode", "Decode"], horizontal=True, on_change=clear_output_on_input_change)
+mode = st.radio("", ["Encode", "Decode"], horizontal=True, on_change=clear_output_on_input_change)
 
 input_text = st.text_area(
     label="Input",
@@ -135,4 +140,3 @@ if st.session_state.output_text:
         mime="text/plain",
         key="download_btn"
     )
-
