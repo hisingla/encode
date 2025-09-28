@@ -3,7 +3,6 @@ import base64
 
 st.set_page_config(page_title="Base64 Encode/Decode with Copy Icon", layout="wide")
 
-# CSS Styling (same as before)
 st.markdown("""
 <style>
     body {
@@ -47,10 +46,11 @@ st.markdown("""
     .copy-icon:hover {
         fill: #1e7e34;
     }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(1) > div > button {
-        background-color: #28a745 !important;
-        color: white !important;
-        font-weight: bold !important;
+    /* Style primary (encode and decode) buttons yellow */
+    button[kind="primary"] {
+        background-color: #facc15 !important; /* Tailwind yellow-400 */
+        color: black !important;
+        font-weight: 900 !important;
         border-radius: 10px !important;
         border:none !important;
         padding: 0.5em 1.5em !important;
@@ -58,11 +58,13 @@ st.markdown("""
         transition: background-color 0.3s ease !important;
         width: 100%;
     }
-    div[data-testid="stHorizontalBlock"] > div:nth-child(1) > div > button:hover {
-        background-color: #1e7e34 !important;
+    button[kind="primary"]:hover {
+        background-color: #b45309 !important; /* Tailwind yellow-700 */
+        color: white !important;
     }
+    /* Download button green */
     div.stDownloadButton > button {
-        background-color: #ff4b5c !important;
+        background-color: #16a34a !important; /* Tailwind green-600 */
         color: white !important;
         font-weight: bold !important;
         border-radius: 10px !important;
@@ -73,7 +75,7 @@ st.markdown("""
         margin-top: 10px !important;
     }
     div.stDownloadButton > button:hover {
-        background-color: #e03f4a !important;
+        background-color: #15803d !important; /* Tailwind green-700 */
     }
 </style>
 """, unsafe_allow_html=True)
@@ -84,7 +86,6 @@ if "output_text" not in st.session_state:
 if "error" not in st.session_state:
     st.session_state.error = ""
 
-# Clear output when input changes (optional for better UX)
 def clear_output_on_input_change():
     st.session_state.output_text = ""
     st.session_state.error = ""
@@ -106,14 +107,14 @@ cols = st.columns(2)
 
 with cols[0]:
     if mode == "Encode":
-        if st.button("Encode", key="encode_btn"):
+        if st.button("Encode", key="encode_btn", type="primary"):
             try:
                 st.session_state.output_text = base64.b64encode(st.session_state.input_text.encode("utf-8")).decode("utf-8")
                 st.session_state.error = ""
             except Exception as e:
                 st.session_state.error = f"Encoding error: {e}"
     else:
-        if st.button("Decode", key="decode_btn"):
+        if st.button("Decode", key="decode_btn", type="primary"):
             try:
                 decoded_bytes = base64.b64decode(st.session_state.input_text.encode("utf-8"), validate=True)
                 st.session_state.output_text = decoded_bytes.decode("utf-8", errors="replace")
@@ -134,3 +135,4 @@ if st.session_state.output_text:
         mime="text/plain",
         key="download_btn"
     )
+
