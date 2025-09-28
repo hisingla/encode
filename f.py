@@ -3,7 +3,7 @@ import base64
 
 st.set_page_config(page_title="Base64 Encode/Decode with Copy Icon", layout="wide")
 
-# CSS Styling
+# CSS Styling (same as before)
 st.markdown("""
 <style>
     body {
@@ -25,6 +25,10 @@ st.markdown("""
         padding-top: 1.8rem;
         resize: vertical;
         position: relative;
+        width: 100%;
+        height: 180px;
+        border: none;
+        outline: none;
     }
     .output-container {
         position: relative;
@@ -43,82 +47,89 @@ st.markdown("""
     .copy-icon:hover {
         fill: #1e7e34;
     }
-    .btn-encode {
-        background-color: #28a745;
-        color: white;
-        font-weight: bold;
-        border-radius: 10px;
-        border:none;
-        padding: 0.5em 1.5em;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) > div > button {
+        background-color: #28a745 !important;
+        color: white !important;
+        font-weight: bold !important;
+        border-radius: 10px !important;
+        border:none !important;
+        padding: 0.5em 1.5em !important;
+        cursor: pointer !important;
+        transition: background-color 0.3s ease !important;
+        width: 100%;
     }
-    .btn-encode:hover {
-        background-color: #1e7e34;
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) > div > button:hover {
+        background-color: #1e7e34 !important;
     }
-    .btn-download > button {
+    div.stDownloadButton > button {
         background-color: #ff4b5c !important;
         color: white !important;
-        font-weight: bold;
+        font-weight: bold !important;
         border-radius: 10px !important;
         padding: 0.5em 1.5em !important;
-        cursor: pointer;
+        cursor: pointer !important;
         transition: background-color 0.3s ease !important;
         width: 100% !important;
         margin-top: 10px !important;
     }
-    .btn-download > button:hover {
+    div.stDownloadButton > button:hover {
         background-color: #e03f4a !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
+if "output_text" not in st.session_state:
+    st.session_state.output_text = ""
+
+if "error" not in st.session_state:
+    st.session_state.error = ""
+
+# Clear output when input changes (optional for better UX)
+def clear_output_on_input_change():
+    st.session_state.output_text = ""
+    st.session_state.error = ""
+
 st.title("🔐 Base64 Encode / Decode Utility")
 
-mode = st.radio("Select Mode", ["Encode", "Decode"], horizontal=True)
+mode = st.radio("Select Mode", ["Encode", "Decode"], horizontal=True, on_change=clear_output_on_input_change)
 
 input_text = st.text_area(
     label="Input",
     height=180,
-    placeholder="Enter text to encode..." if mode == "Encode" else "Enter Base64 text to decode..."
+    placeholder="Enter text to encode..." if mode == "Encode" else "Enter Base64 text to decode...",
+    key="input_text"
 )
 
-output_text = ""
-error = ""
+error_msg = ""
 
-if mode == "Encode":
-    if st.button("Encode", key="encode_btn", help="Click to encode", args=None):
-        try:
-            output_text = base64.b64encode(input_text.encode("utf-8")).decode("utf-8")
-            error = ""
-        except Exception as e:
-            error = f"Encoding error: {e}"
-else:
-    if st.button("Decode", key="decode_btn", help="Click to decode", args=None):
-        try:
-            decoded_bytes = base64.b64decode(input_text.encode("utf-8"), validate=True)
-            output_text = decoded_bytes.decode("utf-8", errors="replace")
-            error = ""
-        except Exception as e:
-            error = f"Decoding error: {e}"
+cols = st.columns(2)
 
-if error:
-    st.error(error)
+with cols[0]:
+    if mode == "Encode":
+        if st.button("Encode", key="encode_btn"):
+            try:
+                st.session_state.output_text = base64.b64encode(st.session_state.input_text.encode("utf-8")).decode("utf-8")
+                st.session_state.error = ""
+            except Exception as e:
+                st.session_state.error = f"Encoding error: {e}"
+    else:
+        if st.button("Decode", key="decode_btn"):
+            try:
+                decoded_bytes = base64.b64decode(st.session_state.input_text.encode("utf-8"), validate=True)
+                st.session_state.output_text = decoded_bytes.decode("utf-8", errors="replace")
+                st.session_state.error = ""
+            except Exception as e:
+                st.session_state.error = f"Decoding error: {e}"
 
-if output_text:
-    st.markdown(
-        f"""
-        <div class="output-container" style="position:relative;">
-            <textarea class="output-textarea" readonly rows="10" style="width:100%;">{output_text}</textarea>
-            <svg class="copy-icon" onclick="navigator.clipboard.writeText(`{output_text}`).then(() => alert('Copied to clipboard!'))" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
-            </svg>
-        </div>
-        """, unsafe_allow_html=True)
+if st.session_state.error:
+    st.error(st.session_state.error)
+
+if st.session_state.output_text:
+    st.code(st.session_state.output_text, language=None)
 
     st.download_button(
         label="Download Output",
-        data=output_text,
+        data=st.session_state.output_text,
         file_name=f"{mode.lower()}_output.txt",
         mime="text/plain",
         key="download_btn"
