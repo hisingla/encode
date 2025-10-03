@@ -122,15 +122,19 @@ with cols[0]:
     if mode == "Encode":
         if st.button("Encode", key="encode_btn", type="primary"):
             try:
-                st.session_state.output_text = base64.b64encode(st.session_state.input_text.encode("utf-8")).decode("utf-8")
+                st.session_state.output_text = base64.b64encode(
+                    st.session_state.input_text.encode("utf-8") # explicit charset
+                ).decode("utf-8") # explicit charset
                 st.session_state.error = ""
             except Exception as e:
                 st.session_state.error = f"Encoding error: {e}"
     else:
         if st.button("Decode", key="decode_btn", type="primary"):
             try:
-                decoded_bytes = base64.b64decode(st.session_state.input_text.encode("utf-8"), validate=True)
-                st.session_state.output_text = decoded_bytes.decode("utf-8", errors="replace")
+                decoded_bytes = base64.b64decode(
+                    st.session_state.input_text.encode("utf-8"), validate=True # explicit charset
+                )
+                st.session_state.output_text = decoded_bytes.decode("utf-8", errors="replace") # explicit charset
                 st.session_state.error = ""
             except Exception as e:
                 st.session_state.error = f"Decoding error: {e}"
