@@ -99,6 +99,14 @@ st.title("🔐 Base64 Encode / Decode Utility")
 
 mode = st.radio("", ["Encode", "Decode"], horizontal=True, on_change=clear_output_on_input_change)
 
+# --- FIX: Clear input_text on mode change ---
+if "last_mode" not in st.session_state:
+    st.session_state.last_mode = mode
+if mode != st.session_state.last_mode:
+    st.session_state.input_text = ""
+    st.session_state.last_mode = mode
+# --- END FIX ---
+
 input_text = st.text_area(
     label="Input",
     height=180,
